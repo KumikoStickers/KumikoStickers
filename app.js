@@ -20,12 +20,15 @@ let cart = [];
 ============================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const saved = JSON.parse(localStorage.getItem("cart")) || [];
 
   const cleaned = [];
 
   saved.forEach(item => {
+
     const id = item.id ?? item;
+
     const product = products.find(p => p.id === id);
 
     if (!product) return;
@@ -36,19 +39,22 @@ document.addEventListener("DOMContentLoaded", () => {
       existing.qty += item.qty || 1;
     } else {
       cleaned.push({
+        ...product,
         id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
         qty: item.qty || 1
       });
     }
+
   });
 
   cart = cleaned;
 
-renderProducts();
-updateCart();
+  renderProducts();
+  updateCart();
+
+  // 🔥 This starts PayPal
+  renderPayPalButton();
+
 });
 
 function renderPayPalButton() {
