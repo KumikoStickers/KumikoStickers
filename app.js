@@ -1,9 +1,9 @@
-const products = window.productData || [];
+const products = Array.isArray(window.productData) ? window.productData : [];
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =============================
-   RENDER PRODUCTS
+   PRODUCTS
 ============================= */
 
 function renderProducts() {
@@ -15,7 +15,7 @@ function renderProducts() {
     div.className = "product";
 
     div.innerHTML = `
-      <img src="${p.image}" />
+      <img src="${p.image}" alt="${p.name}" />
       <h3>${p.name}</h3>
       <p>£${p.price}</p>
       <button onclick="addToCart(${p.id})">Add to Cart</button>
@@ -26,7 +26,7 @@ function renderProducts() {
 }
 
 /* =============================
-   CART ACTIONS
+   CART
 ============================= */
 
 function addToCart(id) {
@@ -76,7 +76,7 @@ function updateCart() {
 }
 
 /* =============================
-   UI HELPERS
+   UI
 ============================= */
 
 function toggleCart() {
