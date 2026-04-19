@@ -13,8 +13,6 @@ const products = [
   { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" }
 ];
 
-const products = Array.isArray(window.productData) ? window.productData : [];
-
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =============================
@@ -28,6 +26,7 @@ function renderProducts() {
 
     const div = document.createElement("div");
     div.className = "product";
+    div.dataset.category = p.category;
 
     div.innerHTML = `
       <img src="${p.image}" alt="${p.name}" />
@@ -41,19 +40,34 @@ function renderProducts() {
 }
 
 /* =============================
-   CART
+   CART (QUANTITY SYSTEM)
 ============================= */
 
 function addToCart(id) {
-  const item = products.find(p => p.id === id);
-  if (!item) return;
+  const existing = cart.find(item => item.id === id);
 
-  cart.push(item);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    cart.push({ ...product, qty: 1 });
+  }
+
   updateCart();
 }
 
-function removeFromCart(index) {
-  cart.splice(index, 1);
+function removeFromCart(id) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+
+  item.qty -= 1;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.id !== id);
+  }
+
   updateCart();
 }
 
@@ -73,21 +87,35 @@ function updateCart() {
   cartItems.innerHTML = "";
 
   let total = 0;
+  let count = 0;
 
-  cart.forEach((item, index) => {
+  if (cart.length === 0) {
+    cartItems.innerHTML = "<li>Your basket is empty</li>";
+  }
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.qty;
+    total += itemTotal;
+    count += item.qty;
+
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>${item.name} - £${item.price}</span>
-      <button onclick="removeFromCart(${index})">Remove</button>
+      <span>
+        ${item.name} x${item.qty} — £${itemTotal}
+      </span>
+
+      <div>
+        <button onclick="removeFromCart(${item.id})">−</button>
+        <button onclick="addToCart(${item.id})">+</button>
+      </div>
     `;
 
     cartItems.appendChild(li);
-    total += item.price;
   });
 
   totalEl.textContent = total;
-  countEl.textContent = cart.length;
+  countEl.textContent = count;
 }
 
 /* =============================
