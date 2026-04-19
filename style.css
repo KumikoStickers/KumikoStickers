@@ -1,19 +1,16 @@
 /* =============================
-   GLOBAL / BASE STYLES
+   RESET / BASE
 ============================= */
 
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: Arial, sans-serif;
-  color: white;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  height: 100vh;
-  text-align: center;
-
+  color: #fff;
   background: linear-gradient(
     180deg,
     #000000,
@@ -23,15 +20,16 @@ body {
 }
 
 /* =============================
-   INTRO / HOME PAGE
+   HOME PAGE
 ============================= */
 
 .home {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   text-align: center;
+  padding: 20px;
 }
 
 .intro-container {
@@ -72,7 +70,7 @@ h1 {
 
   border-radius: 10px;
 
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 .menu-btn:hover {
@@ -82,78 +80,76 @@ h1 {
 }
 
 /* =============================
-   HEADER / NAV BAR
+   HEADER (ABOUT PAGE BASIC)
 ============================= */
 
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 16px 28px;
-
-  background: #000;
-  border-bottom: 2px solid #C8A2FF;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 26px;
+  border-bottom: 1px solid #C8A2FF;
+  background: rgba(0,0,0,0.7);
 }
 
 /* =============================
-   CART ICON
+   STORE OVERRIDES
+   (IMPORTANT: NO CENTRING HERE)
 ============================= */
 
-.cart-icon {
-  cursor: pointer;
-  font-size: 18px;
+.store-page body {
+  text-align: left;
+}
 
-  background: #1C1C1C;
-  padding: 8px 14px;
-
-  border-radius: 8px;
-  border: 1px solid #444444;
+.store-page main {
+  padding: 40px;
 }
 
 /* =============================
-   PRODUCT GRID
+   PRODUCT GRID (OLD SYSTEM SAFE)
 ============================= */
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 22px;
-  padding: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+  padding: 20px 0;
 }
 
 /* =============================
-   PRODUCT CARDS
+   PRODUCTS (NEW SYSTEM)
 ============================= */
 
-.card {
+.product {
   background: #1C1C1C;
   border-radius: 14px;
-  padding: 16px;
-  text-align: center;
+  padding: 14px;
 
-  border: 1px solid #444444;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  border: 1px solid #333;
 
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card:hover {
+.product:hover {
   transform: translateY(-6px);
-  box-shadow: 0 6px 18px rgba(200, 162, 255, 0.25);
+  box-shadow: 0 6px 18px rgba(200, 162, 255, 0.2);
 }
 
-.card img {
+.product img {
   width: 100%;
   border-radius: 10px;
-  margin-bottom: 10px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+.price {
+  color: #C8A2FF;
+  font-weight: bold;
 }
 
 /* =============================
-   BUTTONS (GENERAL)
+   BUTTONS
 ============================= */
 
 button {
@@ -164,12 +160,11 @@ button {
   padding: 10px 14px;
 
   cursor: pointer;
-  margin-top: 10px;
 
   border-radius: 8px;
   font-weight: bold;
 
-  transition: background 0.2s, transform 0.1s;
+  transition: 0.2s;
 }
 
 button:hover {
@@ -178,7 +173,7 @@ button:hover {
 }
 
 /* =============================
-   CART SIDEBAR
+   CART (SIDEBAR STYLE)
 ============================= */
 
 .cart {
@@ -194,17 +189,14 @@ button:hover {
 
   transition: 0.3s;
 
-  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.6);
   border-left: 2px solid #C8A2FF;
+  box-shadow: -2px 0 12px rgba(0,0,0,0.6);
+  z-index: 999;
 }
 
 .cart.open {
   right: 0;
 }
-
-/* =============================
-   CART LIST
-============================= */
 
 #cart-items {
   list-style: none;
@@ -213,16 +205,12 @@ button:hover {
 
 #cart-items li {
   padding: 6px 0;
-  border-bottom: 1px solid #444444;
+  border-bottom: 1px solid #333;
 }
 
-/* =============================
-   TOTAL PRICE
-============================= */
-
 #total {
-  font-weight: bold;
   color: #C8A2FF;
+  font-weight: bold;
 }
 
 /* =============================
