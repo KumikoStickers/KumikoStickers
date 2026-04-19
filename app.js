@@ -56,10 +56,17 @@ function getTotals() {
 
   const discount = calculateStickerDiscount(stickerQty);
   const discountedSubtotal = subtotal - discount;
+
   const shipping = calculateShipping(discountedSubtotal);
   const total = discountedSubtotal + shipping;
 
-  return { subtotal, discount, shipping, total, count };
+  return {
+    subtotal,
+    discount,
+    shipping,
+    total,
+    count
+  };
 }
 
 /* =============================
@@ -72,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const saved = JSON.parse(localStorage.getItem("cart")) || [];
 
     cart = saved.map(item => {
-      const product = products.find(p => p.id === item.id || p.id === item);
+      const product = products.find(p => p.id === (item.id ?? item));
       if (!product) return null;
 
       return {
@@ -117,7 +124,7 @@ function renderProducts() {
 }
 
 /* =============================
-   CART
+   CART LOGIC
 ============================= */
 
 function addToCart(id) {
@@ -197,19 +204,20 @@ function updateCart() {
 }
 
 /* =============================
-   CART TOGGLE
+   UI
 ============================= */
 
 function toggleCart() {
   document.getElementById("cart").classList.toggle("open");
 }
 
+/* =============================
+   FIREBASE ORDER SAVE
+============================= */
+
 function saveOrderToFirebase(paypalDetails) {
 
-  if (!window.firebaseDB) {
-    console.warn("Firebase not loaded");
-    return;
-  }
+  if (!window.firebaseDB) return;
 
   const { subtotal, discount, shipping, total } = getTotals();
 
@@ -217,30 +225,19 @@ function saveOrderToFirebase(paypalDetails) {
   const payer = paypalDetails?.payer || {};
 
   const order = {
-    items: cart.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      qty: item.qty,
-      category: item.category
-    })),
-
+    items: cart,
     totals: {
       subtotal,
       discount,
       shipping,
       total
     },
-
     customer: {
       name: payer.name?.given_name + " " + payer.name?.surname || "",
       email: payer.email_address || ""
     },
-
     shippingAddress: shippingInfo.address || {},
-
     paypalOrderId: paypalDetails.id,
-
     createdAt: new Date().toISOString()
   };
 
@@ -265,7 +262,7 @@ function renderPayPalButton() {
 
     createOrder: function (_, actions) {
 
-      const { subtotal, discount, shipping, total } = getTotals();
+      const { total } = getTotals();
 
       if (total <= 0) {
         alert("Your basket is empty!");
@@ -284,25 +281,34 @@ function renderPayPalButton() {
 
     onApprove: function (_, actions) {
 
-  return actions.order.capture().then(async (details) => {
+      return actions.order.capture().then(async (details) => {
 
-    try {
+        try {
 
-      await saveOrderToFirebase(details);
+          await saveOrderToFirebase(details);
 
-      alert("Payment successful ✨ Order saved!");
+          localStorage.setItem("lastOrder", JSON.stringify({
+            items: cart,
+            ...getTotals(),
+            paypal: details
+          }));
 
-      cart = [];
-      localStorage.setItem("cart", JSON.stringify(cart));
-      updateCart();
+          cart = [];
+          localStorage.setItem("cart", JSON.stringify(cart));
+          updateCart();
 
-    } catch (err) {
+          window.location.href = "success.html";
 
-      console.error("Firebase save failed:", err);
-      alert("Payment successful, but order saving failed");
+        } catch (err) {
+
+          console.error(err);
+          alert("Payment successful but saving failed");
+
+        }
+
+      });
 
     }
 
-  });
-
+  }).render("#paypal-button-container");
 }
