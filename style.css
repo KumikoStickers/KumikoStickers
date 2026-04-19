@@ -1,9 +1,10 @@
-/* Reset & base styling */
+/* =============================
+   GLOBAL / BASE STYLES
+============================= */
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-
   color: white;
 
   display: flex;
@@ -21,28 +22,37 @@ body {
   );
 }
 
-/* Container */
+/* =============================
+   INTRO / HOME PAGE
+============================= */
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
 
 .intro-container {
   max-width: 500px;
-  padding: 20px;
-}
+  padding: 35px;
 
-/* Title */
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  border: 1px solid rgba(200, 162, 255, 0.2);
+}
 
 h1 {
   font-size: 42px;
   margin-bottom: 10px;
+  letter-spacing: 1px;
 }
-
-/* Tagline */
 
 .tagline {
   color: #ccc;
   margin-bottom: 30px;
 }
-
-/* Buttons container */
 
 .menu-buttons {
   display: flex;
@@ -50,14 +60,11 @@ h1 {
   gap: 15px;
 }
 
-/* Buttons */
-
 .menu-btn {
   display: block;
-
   padding: 14px;
 
-  background: #c8a2ff; /* lilac */
+  background: #C8A2FF;
   color: black;
 
   text-decoration: none;
@@ -65,42 +72,52 @@ h1 {
 
   border-radius: 10px;
 
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .menu-btn:hover {
-  transform: scale(1.05);
-  background: #d8b8ff;
+  transform: translateY(-2px);
+  background: #D8B8FF;
+  box-shadow: 0 6px 18px rgba(200, 162, 255, 0.35);
 }
-/* Header */
+
+/* =============================
+   HEADER / NAV BAR
+============================= */
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 28px;
+
   background: #000;
   border-bottom: 2px solid #C8A2FF;
 }
 
-h1 {
+header h1 {
   margin: 0;
   font-size: 26px;
-  letter-spacing: 1px;
 }
 
-/* Cart icon */
+/* =============================
+   CART ICON
+============================= */
 
 .cart-icon {
   cursor: pointer;
   font-size: 18px;
+
   background: #1C1C1C;
   padding: 8px 14px;
+
   border-radius: 8px;
   border: 1px solid #444444;
 }
 
-/* Product grid */
+/* =============================
+   PRODUCT GRID
+============================= */
 
 .grid {
   display: grid;
@@ -109,14 +126,18 @@ h1 {
   padding: 24px;
 }
 
-/* Product cards */
+/* =============================
+   PRODUCT CARDS
+============================= */
 
 .card {
   background: #1C1C1C;
   border-radius: 14px;
   padding: 16px;
   text-align: center;
+
   border: 1px solid #444444;
+
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -131,17 +152,23 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* Buttons */
+/* =============================
+   BUTTONS (GENERAL)
+============================= */
 
 button {
   background: #C8A2FF;
   color: black;
+
   border: none;
   padding: 10px 14px;
+
   cursor: pointer;
   margin-top: 10px;
+
   border-radius: 8px;
   font-weight: bold;
+
   transition: background 0.2s, transform 0.1s;
 }
 
@@ -150,18 +177,24 @@ button:hover {
   transform: scale(1.03);
 }
 
-/* Cart sidebar */
+/* =============================
+   CART SIDEBAR
+============================= */
 
 .cart {
   position: fixed;
   right: -350px;
   top: 0;
+
   width: 300px;
   height: 100%;
+
   background: #1C1C1C;
   padding: 20px;
+
   transition: 0.3s;
-  box-shadow: -2px 0 12px rgba(0,0,0,0.6);
+
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.6);
   border-left: 2px solid #C8A2FF;
 }
 
@@ -169,7 +202,9 @@ button:hover {
   right: 0;
 }
 
-/* Cart list */
+/* =============================
+   CART LIST
+============================= */
 
 #cart-items {
   list-style: none;
@@ -181,60 +216,24 @@ button:hover {
   border-bottom: 1px solid #444444;
 }
 
-/* Total */
+/* =============================
+   TOTAL PRICE
+============================= */
 
 #total {
   font-weight: bold;
-
-  /* Home / Intro Page */
-
-.home {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
-}
-
-.intro-container {
-  max-width: 500px;
-}
-
-.tagline {
-  color: #aaa;
-  margin-bottom: 30px;
-}
-
-/* Menu buttons */
-
-.menu-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.menu-btn {
-  display: block;
-  padding: 14px;
-  background: #C8A2FF;
-  color: black;
-  text-decoration: none;
-  border-radius: 10px;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.menu-btn:hover {
-  transform: scale(1.05);
-  background: #D8B8FF;
-}
   color: #C8A2FF;
 }
+
+/* =============================
+   ABOUT PAGE
+============================= */
 
 .about-container {
   max-width: 600px;
   margin: 60px auto;
   padding: 20px;
+
   text-align: center;
   line-height: 1.6;
 }
