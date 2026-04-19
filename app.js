@@ -227,10 +227,14 @@ function renderPayPalButton() {
 
     createOrder: function (data, actions) {
 
-      const total = cart.reduce(
-        (sum, item) => sum + item.price * item.qty,
-        0
-      );
+      const subtotal = cart.reduce(
+  (sum, item) => sum + item.price * item.qty,
+  0
+);
+
+const shipping = calculateShipping(subtotal);
+
+const total = subtotal + shipping;
 
       if (total <= 0) {
         alert("Your basket is empty!");
