@@ -1,10 +1,4 @@
-const products = [
-  { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 2, name: "Ghost Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 3, name: "Bat Earrings", price: 8, image: "https://via.placeholder.com/200", category: "earrings" },
-  { id: 4, name: "Heart Keychain", price: 5, image: "https://via.placeholder.com/200", category: "keychains" },
-  { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" }
-];
+const products = window.productData || [];
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -40,7 +34,10 @@ function updateCart() {
   const totalEl = document.getElementById("total");
   const countEl = document.getElementById("cart-count");
 
+  if (!cartItems || !totalEl || !countEl) return;
+
   cartItems.innerHTML = "";
+
   let total = 0;
 
   cart.forEach(item => {
