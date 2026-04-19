@@ -1,72 +1,36 @@
 const products = [
 
   { id: 3, name: "Bat Earrings", price: 8, image: "https://via.placeholder.com/200", category: "earrings" },
-
   { id: 4, name: "Heart Keychain", price: 5, image: "https://via.placeholder.com/200", category: "keychains" },
-
   { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" },
 
-  // 30 Sticker placeholders at £1.50
-  { id: 6, name: "Sticker 1", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 7, name: "Sticker 2", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 8, name: "Sticker 3", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 9, name: "Sticker 4", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 10, name: "Sticker 5", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 11, name: "Sticker 6", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 12, name: "Sticker 7", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 13, name: "Sticker 8", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 14, name: "Sticker 9", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 15, name: "Sticker 10", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 16, name: "Sticker 11", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 17, name: "Sticker 12", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 18, name: "Sticker 13", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 19, name: "Sticker 14", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 20, name: "Sticker 15", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 21, name: "Sticker 16", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 22, name: "Sticker 17", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 23, name: "Sticker 18", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 24, name: "Sticker 19", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 25, name: "Sticker 20", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 26, name: "Sticker 21", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 27, name: "Sticker 22", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 28, name: "Sticker 23", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 29, name: "Sticker 24", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 30, name: "Sticker 25", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 31, name: "Sticker 26", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 32, name: "Sticker 27", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 33, name: "Sticker 28", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 34, name: "Sticker 29", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 35, name: "Sticker 30", price: 1.5, image: "https://via.placeholder.com/200", category: "stickers" }
+  // 30 stickers (£1.50 each)
+  ...Array.from({ length: 30 }, (_, i) => ({
+    id: 6 + i,
+    name: `Sticker ${i + 1}`,
+    price: 1.5,
+    image: "https://via.placeholder.com/200",
+    category: "stickers"
+  }))
+
 ];
 
 let cart = [];
 
-const SHIPPING_FLAT_RATE = 2.50;
+/* =============================
+   SETTINGS
+============================= */
+
+const SHIPPING_FLAT_RATE = 2.5;
 const FREE_SHIPPING_THRESHOLD = 20;
 
 /* =============================
-   DEAL: 4 STICKERS FOR £4
+   HELPERS
 ============================= */
 
-function calculateStickerDiscount() {
-
-  let stickerQty = 0;
-
-  cart.forEach(item => {
-    if (item.category === "stickers") {
-      stickerQty += item.qty;
-    }
-  });
-
+function calculateStickerDiscount(stickerQty) {
   const deals = Math.floor(stickerQty / 4);
-
-  const normalPrice = 4 * 1.5; // £6 normally
-  const dealPrice = 4;         // £4 deal
-
-  const discountPerDeal = normalPrice - dealPrice; // £2 discount
-
-  return deals * discountPerDeal;
-
+  return deals * 2; // £2 off per 4 stickers
 }
 
 function calculateShipping(subtotal) {
@@ -75,16 +39,61 @@ function calculateShipping(subtotal) {
   return SHIPPING_FLAT_RATE;
 }
 
+function getTotals() {
+
+  let subtotal = 0;
+  let count = 0;
+  let stickerQty = 0;
+
+  cart.forEach(item => {
+    subtotal += item.price * item.qty;
+    count += item.qty;
+
+    if (item.category === "stickers") {
+      stickerQty += item.qty;
+    }
+  });
+
+  const discount = calculateStickerDiscount(stickerQty);
+  const discountedSubtotal = subtotal - discount;
+  const shipping = calculateShipping(discountedSubtotal);
+  const total = discountedSubtotal + shipping;
+
+  return { subtotal, discount, shipping, total, count };
+}
+
+/* =============================
+   INIT
+============================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  const saved = JSON.parse(localStorage.getItem("cart")) || [];
-  cart = saved;
+  try {
+    const saved = JSON.parse(localStorage.getItem("cart")) || [];
+
+    cart = saved.map(item => {
+      const product = products.find(p => p.id === item.id || p.id === item);
+      if (!product) return null;
+
+      return {
+        ...product,
+        id: product.id,
+        qty: item.qty || 1
+      };
+    }).filter(Boolean);
+
+  } catch (e) {
+    cart = [];
+  }
 
   renderProducts();
   updateCart();
   renderPayPalButton();
-
 });
+
+/* =============================
+   PRODUCTS
+============================= */
 
 function renderProducts() {
 
@@ -97,17 +106,19 @@ function renderProducts() {
     div.className = "product";
 
     div.innerHTML = `
-      <img src="${p.image}" alt="${p.name}" />
+      <img src="${p.image}" alt="${p.name}">
       <h3>${p.name}</h3>
       <p>£${p.price}</p>
       <button onclick="addToCart(${p.id})">Add to Cart</button>
     `;
 
     container.appendChild(div);
-
   });
-
 }
+
+/* =============================
+   CART
+============================= */
 
 function addToCart(id) {
 
@@ -123,7 +134,6 @@ function addToCart(id) {
   }
 
   updateCart();
-
 }
 
 function removeFromCart(id) {
@@ -138,8 +148,11 @@ function removeFromCart(id) {
   }
 
   updateCart();
-
 }
+
+/* =============================
+   CART UI
+============================= */
 
 function updateCart() {
 
@@ -152,28 +165,21 @@ function updateCart() {
 
   if (!cartItems) return;
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-
   cartItems.innerHTML = "";
-
-  let subtotal = 0;
-  let count = 0;
+  localStorage.setItem("cart", JSON.stringify(cart));
 
   if (cart.length === 0) {
     cartItems.innerHTML = "<li>Your basket is empty</li>";
   }
 
+  const { subtotal, discount, shipping, total, count } = getTotals();
+
   cart.forEach(item => {
-
-    const itemTotal = item.price * item.qty;
-
-    subtotal += itemTotal;
-    count += item.qty;
 
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>${item.name} x${item.qty} — £${itemTotal.toFixed(2)}</span>
+      <span>${item.name} x${item.qty} — £${(item.price * item.qty).toFixed(2)}</span>
       <div>
         <button onclick="removeFromCart(${item.id})">−</button>
         <button onclick="addToCart(${item.id})">+</button>
@@ -181,37 +187,26 @@ function updateCart() {
     `;
 
     cartItems.appendChild(li);
-
   });
 
-  const discount = calculateStickerDiscount();
-
-  subtotal = subtotal - discount;
-
-  // Calculate sticker discount separately for display
-  const discount = calculateStickerDiscount(stickerCount);
-
-  const shipping = calculateShipping(subtotal);
-  const total = subtotal + shipping; // subtotal already has discount applied
-
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2);
+  if (discountEl) discountEl.textContent = discount ? `-£${discount.toFixed(2)}` : "0.00";
   if (shippingEl) shippingEl.textContent = shipping.toFixed(2);
-
-  if (discountEl) {
-    if (discount > 0) {
-      discountEl.textContent = `-${discount.toFixed(2)}`;
-    } else {
-      discountEl.textContent = "0.00";
-    }
-  }
   if (totalEl) totalEl.textContent = total.toFixed(2);
   if (countEl) countEl.textContent = count;
-
 }
+
+/* =============================
+   CART TOGGLE
+============================= */
 
 function toggleCart() {
   document.getElementById("cart").classList.toggle("open");
 }
+
+/* =============================
+   PAYPAL
+============================= */
 
 function renderPayPalButton() {
 
@@ -222,16 +217,9 @@ function renderPayPalButton() {
 
   paypal.Buttons({
 
-    createOrder: function (data, actions) {
+    createOrder: function (_, actions) {
 
-      let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
-      const discount = calculateStickerDiscount();
-
-      subtotal = subtotal - discount;
-
-      const shipping = calculateShipping(subtotal);
-      const total = subtotal + shipping;
+      const { subtotal, discount, shipping, total } = getTotals();
 
       if (total <= 0) {
         alert("Your basket is empty!");
@@ -239,46 +227,20 @@ function renderPayPalButton() {
       }
 
       return actions.order.create({
-
         purchase_units: [{
-
           amount: {
-
             currency_code: "GBP",
-
-            value: total.toFixed(2),
-
-            breakdown: {
-
-              item_total: {
-                currency_code: "GBP",
-                value: subtotal.toFixed(2)
-              },
-
-              shipping: {
-                currency_code: "GBP",
-                value: shipping.toFixed(2)
-              }
-
-            }
-
+            value: total.toFixed(2)
           }
-
-        }],
-
-        application_context: {
-          shipping_preference: "GET_FROM_FILE"
-        }
-
+        }]
       });
-
     },
 
-    onApprove: function (data, actions) {
+    onApprove: function (_, actions) {
 
-      return actions.order.capture().then(function (details) {
+      return actions.order.capture().then(() => {
 
-        alert("Payment successful! Thank you " + details.payer.name.given_name + " ✨");
+        alert("Payment successful ✨");
 
         cart = [];
         localStorage.setItem("cart", JSON.stringify(cart));
@@ -289,5 +251,4 @@ function renderPayPalButton() {
     }
 
   }).render("#paypal-button-container");
-
 }
