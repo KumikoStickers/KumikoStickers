@@ -1,6 +1,4 @@
 const products = [
-  { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
-  { id: 2, name: "Ghost Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
 
   { id: 3, name: "Bat Earrings", price: 8, image: "https://via.placeholder.com/200", category: "earrings" },
 
@@ -147,6 +145,7 @@ function updateCart() {
 
   const cartItems = document.getElementById("cart-items");
   const subtotalEl = document.getElementById("subtotal");
+  const discountEl = document.getElementById("discount");
   const shippingEl = document.getElementById("shipping");
   const totalEl = document.getElementById("total");
   const countEl = document.getElementById("cart-count");
@@ -189,11 +188,22 @@ function updateCart() {
 
   subtotal = subtotal - discount;
 
+  // Calculate sticker discount separately for display
+  const discount = calculateStickerDiscount(stickerCount);
+
   const shipping = calculateShipping(subtotal);
-  const total = subtotal + shipping;
+  const total = subtotal + shipping; // subtotal already has discount applied
 
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2);
   if (shippingEl) shippingEl.textContent = shipping.toFixed(2);
+
+  if (discountEl) {
+    if (discount > 0) {
+      discountEl.textContent = `-${discount.toFixed(2)}`;
+    } else {
+      discountEl.textContent = "0.00";
+    }
+  }
   if (totalEl) totalEl.textContent = total.toFixed(2);
   if (countEl) countEl.textContent = count;
 
