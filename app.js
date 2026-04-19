@@ -60,13 +60,7 @@ function getTotals() {
   const shipping = calculateShipping(discountedSubtotal);
   const total = discountedSubtotal + shipping;
 
-  return {
-    subtotal,
-    discount,
-    shipping,
-    total,
-    count
-  };
+  return { subtotal, discount, shipping, total, count };
 }
 
 /* =============================
@@ -84,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return {
         ...product,
-        id: product.id,
         qty: item.qty || 1
       };
     }).filter(Boolean);
@@ -134,11 +127,8 @@ function addToCart(id) {
 
   const existing = cart.find(i => i.id === id);
 
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ ...item, qty: 1 });
-  }
+  if (existing) existing.qty++;
+  else cart.push({ ...item, qty: 1 });
 
   updateCart();
 }
@@ -212,32 +202,23 @@ function toggleCart() {
 }
 
 /* =============================
-   FIREBASE ORDER SAVE
+   FIREBASE
 ============================= */
 
 function saveOrderToFirebase(paypalDetails) {
 
   if (!window.firebaseDB) return;
 
-  const { subtotal, discount, shipping, total } = getTotals();
-
-  const shippingInfo = paypalDetails?.purchase_units?.[0]?.shipping || {};
-  const payer = paypalDetails?.payer || {};
+  const totals = getTotals();
 
   const order = {
     items: cart,
-    totals: {
-      subtotal,
-      discount,
-      shipping,
-      total
-    },
-    customer: {
-      name: payer.name?.given_name + " " + payer.name?.surname || "",
-      email: payer.email_address || ""
-    },
-    shippingAddress: shippingInfo.address || {},
+    totals,
     paypalOrderId: paypalDetails.id,
+    customer: {
+      name: paypalDetails.payer?.name?.given_name || "",
+      email: paypalDetails.payer?.email_address || ""
+    },
     createdAt: new Date().toISOString()
   };
 
@@ -248,7 +229,7 @@ function saveOrderToFirebase(paypalDetails) {
 }
 
 /* =============================
-   PAYPAL
+   PAYPAL + EMAIL FLOW
 ============================= */
 
 function renderPayPalButton() {
@@ -263,11 +244,6 @@ function renderPayPalButton() {
     createOrder: function (_, actions) {
 
       const { total } = getTotals();
-
-      if (total <= 0) {
-        alert("Your basket is empty!");
-        return;
-      }
 
       return actions.order.create({
         purchase_units: [{
@@ -285,11 +261,31 @@ function renderPayPalButton() {
 
         try {
 
+          const totals = getTotals();
+
+          const summary = cart.map(i =>
+            `${i.name} x${i.qty} - £${(i.price * i.qty).toFixed(2)}`
+          ).join("\n");
+
           await saveOrderToFirebase(details);
+
+          await emailjs.send(
+            "service_dgdq7zo",
+            "template_friilrh",
+            {
+              to_name: details.payer?.name?.given_name || "Customer",
+              to_email: details.payer?.email_address,
+              order_summary: summary,
+              subtotal: totals.subtotal.toFixed(2),
+              discount: totals.discount.toFixed(2),
+              shipping: totals.shipping.toFixed(2),
+              total: totals.total.toFixed(2)
+            }
+          );
 
           localStorage.setItem("lastOrder", JSON.stringify({
             items: cart,
-            ...getTotals(),
+            totals,
             paypal: details
           }));
 
@@ -302,7 +298,7 @@ function renderPayPalButton() {
         } catch (err) {
 
           console.error(err);
-          alert("Payment successful but saving failed");
+          alert("Payment succeeded but order processing failed");
 
         }
 
