@@ -38,6 +38,15 @@
     h1{
       font-size:20px;
       letter-spacing:1px;
+      margin:0;
+    }
+
+    .header-right{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:10px;
     }
 
     .cart-icon{
@@ -46,6 +55,9 @@
       padding:10px 14px;
       border-radius:12px;
       transition:0.2s;
+      display:flex;
+      gap:6px;
+      align-items:center;
     }
 
     .cart-icon:hover{
@@ -53,22 +65,50 @@
       background:#222;
     }
 
+    .cart{
+      position:absolute;
+      top:60px;
+      right:0;
+      width:280px;
+      background:var(--card);
+      border:1px solid #222;
+      border-radius:14px;
+      padding:15px;
+      display:none;
+      flex-direction:column;
+      gap:10px;
+      z-index:1000;
+    }
+
+    .cart.open{
+      display:flex;
+    }
+
     main{
       padding:30px;
-      max-width:1200px;
-      margin:auto;
+    }
+
+    .category{
+      margin-bottom:40px;
+    }
+
+    .category h2{
+      font-size:18px;
+      margin-bottom:15px;
+      border-left:3px solid var(--accent);
+      padding-left:10px;
     }
 
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
       gap:20px;
     }
 
     .product{
       background:var(--card);
       border-radius:16px;
-      padding:16px;
+      padding:14px;
       display:flex;
       flex-direction:column;
       gap:10px;
@@ -81,14 +121,9 @@
 
     .product img{
       width:100%;
-      border-radius:12px;
       aspect-ratio:1/1;
       object-fit:cover;
-    }
-
-    .product h3{
-      margin:0;
-      font-size:16px;
+      border-radius:12px;
     }
 
     .price{
@@ -109,23 +144,6 @@
     button:hover{
       filter:brightness(1.1);
     }
-
-    .cart{
-      position:fixed;
-      right:-320px;
-      top:0;
-      width:300px;
-      height:100%;
-      background:var(--card);
-      padding:20px;
-      transition:0.3s;
-      overflow:auto;
-      border-left:1px solid #222;
-    }
-
-    .cart.open{
-      right:0;
-    }
   </style>
 </head>
 
@@ -133,23 +151,45 @@
 
 <header>
   <h1>My Store ✦</h1>
-  <div class="cart-icon" onclick="toggleCart()">
-    🛒 <span id="cart-count">0</span>
+
+  <div class="header-right">
+    <div class="cart-icon" onclick="toggleCart()">
+      🛒 <span id="cart-count">0</span>
+    </div>
+
+    <div id="cart" class="cart">
+      <h3>Your Basket</h3>
+      <ul id="cart-items"></ul>
+      <p>Total: £<span id="total">0</span></p>
+      <button onclick="checkout()">Checkout</button>
+    </div>
   </div>
 </header>
 
 <main>
-  <div id="products" class="grid"></div>
-</main>
 
-<div id="cart" class="cart">
-  <h2>Your Cart</h2>
-  <ul id="cart-items"></ul>
-  <p>Total: £<span id="total">0</span></p>
-  <button onclick="checkout()">Checkout</button>
-</div>
+  <section class="category">
+    <h2>Stickers</h2>
+    <div class="grid" id="stickers"></div>
+  </section>
+
+  <section class="category">
+    <h2>Earrings</h2>
+    <div class="grid" id="earrings"></div>
+  </section>
+
+  <section class="category">
+    <h2>Keychains</h2>
+    <div class="grid" id="keychains"></div>
+  </section>
+
+  <section class="category">
+    <h2>Pins</h2>
+    <div class="grid" id="pins"></div>
+  </section>
+
+</main>
 
 <script src="app.js"></script>
 </body>
 </html>
-
