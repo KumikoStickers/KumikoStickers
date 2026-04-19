@@ -148,6 +148,8 @@ function removeFromCart(id) {
 function updateCart() {
 
   const cartItems = document.getElementById("cart-items");
+  const subtotalEl = document.getElementById("subtotal");
+  const shippingEl = document.getElementById("shipping");
   const totalEl = document.getElementById("total");
   const countEl = document.getElementById("cart-count");
 
@@ -157,7 +159,7 @@ function updateCart() {
 
   cartItems.innerHTML = "";
 
-  let total = 0;
+  let subtotal = 0;
   let count = 0;
 
   if (cart.length === 0) {
@@ -168,13 +170,13 @@ function updateCart() {
 
     const itemTotal = item.price * item.qty;
 
-    total += itemTotal;
+    subtotal += itemTotal;
     count += item.qty;
 
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>${item.name} x${item.qty} — £${itemTotal}</span>
+      <span>${item.name} x${item.qty} — £${itemTotal.toFixed(2)}</span>
       <div>
         <button onclick="removeFromCart(${item.id})">−</button>
         <button onclick="addToCart(${item.id})">+</button>
@@ -184,6 +186,13 @@ function updateCart() {
     cartItems.appendChild(li);
 
   });
+
+  const shipping = calculateShipping(subtotal);
+
+  const total = subtotal + shipping;
+
+  if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2);
+  if (shippingEl) shippingEl.textContent = shipping.toFixed(2);
 
   totalEl.textContent = total.toFixed(2);
   countEl.textContent = count;
