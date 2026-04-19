@@ -163,3 +163,11 @@ button:hover {
 }
   color: #C8A2FF;
 }
+
+.about-container {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 20px;
+  text-align: center;
+  line-height: 1.6;
+}
