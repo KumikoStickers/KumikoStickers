@@ -210,12 +210,16 @@ function renderPayPalButton() {
       }
 
       return actions.order.create({
-        purchase_units: [{
-          amount: {
-            value: total.toFixed(2)
-          }
-        }]
-      });
+  purchase_units: [{
+    amount: {
+      value: total.toFixed(2),
+      currency_code: "GBP"
+    }
+  }],
+  application_context: {
+    shipping_preference: "GET_FROM_FILE"
+  }
+});
 
     },
 
