@@ -4,7 +4,6 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 
-  background: black;
   color: white;
 
   display: flex;
@@ -13,6 +12,13 @@ body {
 
   height: 100vh;
   text-align: center;
+
+  background: linear-gradient(
+    180deg,
+    #000000,
+    #1a1026,
+    #000000
+  );
 }
 
 /* Container */
