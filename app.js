@@ -9,13 +9,44 @@ const products = [
   { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" }
 ];
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+/* =============================
+   CART (SAFE FORMAT)
+   ALWAYS: { id, qty }
+============================= */
+
+let cart = [];
 
 /* =============================
-   INIT (SAFE LOAD)
+   INIT (fix old broken data)
 ============================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  const saved = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // normalize old + broken cart formats
+  const cleaned = [];
+
+  saved.forEach(item => {
+    const id = item.id ?? item;
+    const product = products.find(p => p.id === id);
+
+    if (!product) return;
+
+    const existing = cleaned.find(c => c.id === id);
+
+    if (existing) {
+      existing.qty += item.qty || 1;
+    } else {
+      cleaned.push({
+        ...product,
+        id,
+        qty: item.qty || 1
+      });
+    }
+  });
+
+  cart = cleaned;
+
   renderProducts();
   updateCart();
 });
@@ -34,7 +65,7 @@ function renderProducts() {
 
     div.innerHTML = `
       <img src="${p.image}" alt="${p.name}" />
-      <h3 data-category="${p.category}">${p.name}</h3>
+      <h3>${p.name}</h3>
       <p>£${p.price}</p>
       <button onclick="addToCart(${p.id})">Add to Cart</button>
     `;
@@ -44,19 +75,19 @@ function renderProducts() {
 }
 
 /* =============================
-   CART (WITH QUANTITY)
+   CART LOGIC
 ============================= */
 
 function addToCart(id) {
-  const existing = cart.find(item => item.id === id);
+  const item = products.find(p => p.id === id);
+  if (!item) return;
+
+  const existing = cart.find(i => i.id === id);
 
   if (existing) {
-    existing.qty += 1;
+    existing.qty++;
   } else {
-    const product = products.find(p => p.id === id);
-    if (!product) return;
-
-    cart.push({ ...product, qty: 1 });
+    cart.push({ ...item, qty: 1 });
   }
 
   updateCart();
@@ -66,17 +97,12 @@ function removeFromCart(id) {
   const item = cart.find(i => i.id === id);
   if (!item) return;
 
-  item.qty -= 1;
+  item.qty--;
 
   if (item.qty <= 0) {
     cart = cart.filter(i => i.id !== id);
   }
 
-  updateCart();
-}
-
-function clearCart() {
-  cart = [];
   updateCart();
 }
 
@@ -127,7 +153,7 @@ function updateCart() {
 }
 
 /* =============================
-   UI CONTROLS
+   UI
 ============================= */
 
 function toggleCart() {
