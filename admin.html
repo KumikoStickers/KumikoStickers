@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .order {
+      background: #222;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    .order h3 {
+      margin: 0 0 10px;
+    }
+
+    .items {
+      margin-top: 10px;
+      padding-left: 15px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #444;
+      border-radius: 5px;
+      margin-right: 5px;
+      font-size: 12px;
+    }
+
+    .total {
+      color: #0f0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🧾 Order Dashboard</h1>
+
+<div id="orders">Loading...</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "kumiko-store",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function loadOrders() {
+
+    const container = document.getElementById("orders");
+    container.innerHTML = "";
+
+    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach(doc => {
+
+      const order = doc.data();
+
+      const div = document.createElement("div");
+      div.className = "order";
+
+      div.innerHTML = `
+        <h3>Order ID: ${order.paypalOrderId || doc.id}</h3>
+
+        <p><span class="tag">Customer</span> ${order.customer?.name || "Unknown"}</p>
+        <p><span class="tag">Email</span> ${order.customer?.email || "N/A"}</p>
+
+        <p><span class="tag">Subtotal</span> £${order.totals?.subtotal?.toFixed(2)}</p>
+        <p><span class="tag">Discount</span> -£${order.totals?.discount?.toFixed(2)}</p>
+        <p><span class="tag">Shipping</span> £${order.totals?.shipping?.toFixed(2)}</p>
+        <p class="total">Total: £${order.totals?.total?.toFixed(2)}</p>
+
+        <h4>Items:</h4>
+        <ul class="items">
+          ${(order.items || []).map(i =>
+            `<li>${i.name} x${i.qty}</li>`
+          ).join("")}
+        </ul>
+
+        <details>
+          <summary>Shipping Address</summary>
+          <pre>${JSON.stringify(order.shippingAddress || {}, null, 2)}</pre>
+        </details>
+      `;
+
+      container.appendChild(div);
+
+    });
+
+    if (!snapshot.size) {
+      container.innerHTML = "<p>No orders yet.</p>";
+    }
+  }
+
+  loadOrders();
+</script>
+
+</body>
+</html>
