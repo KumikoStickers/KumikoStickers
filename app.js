@@ -225,21 +225,23 @@ function renderPayPalButton() {
 
     onApprove: function (data, actions) {
 
-      return actions.order.capture().then(function (details) {
+  return actions.order.capture().then(function (details) {
 
-        alert(
-          "Payment successful! Thank you " +
-          details.payer.name.given_name +
-          " ✨"
-        );
+    console.log(details.purchase_units[0].shipping);
 
-        cart = [];
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCart();
+    alert(
+      "Payment successful! Thank you " +
+      details.payer.name.given_name +
+      " ✨"
+    );
 
-      });
+    cart = [];
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCart();
 
-    }
+  });
+
+},
 
   }).render("#paypal-button-container");
 
