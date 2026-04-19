@@ -1,3 +1,4 @@
+
 const products = [
   { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
   { id: 2, name: "Ghost Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
@@ -10,8 +11,7 @@ const products = [
 ];
 
 /* =============================
-   CART FORMAT (NEW)
-   { id, qty }
+   CART (qty-based)
 ============================= */
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -32,7 +32,10 @@ function renderProducts() {
       <img src="${p.image}" alt="${p.name}" />
       <h3>${p.name}</h3>
       <p class="price">£${p.price}</p>
-      <button onclick="addToCart(${p.id})">Add to Cart</button>
+
+      <button data-action="add" data-id="${p.id}">
+        Add to Cart
+      </button>
     `;
 
     container.appendChild(div);
@@ -40,7 +43,7 @@ function renderProducts() {
 }
 
 /* =============================
-   CART LOGIC (QUANTITIES)
+   CART LOGIC
 ============================= */
 
 function addToCart(id) {
@@ -69,7 +72,7 @@ function removeFromCart(id) {
 }
 
 /* =============================
-   CART UI RENDER
+   CART UI
 ============================= */
 
 function updateCart() {
@@ -97,13 +100,11 @@ function updateCart() {
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>
-        ${product.name} x${item.qty} - £${itemTotal}
-      </span>
+      <span>${product.name} x${item.qty} - £${itemTotal}</span>
 
       <div class="cart-controls">
-        <button onclick="removeFromCart(${item.id})">−</button>
-        <button onclick="addToCart(${item.id})">+</button>
+        <button data-action="remove" data-id="${item.id}">−</button>
+        <button data-action="add" data-id="${item.id}">+</button>
       </div>
     `;
 
@@ -113,6 +114,26 @@ function updateCart() {
   totalEl.textContent = total;
   countEl.textContent = count;
 }
+
+/* =============================
+   EVENT DELEGATION (FIX)
+============================= */
+
+document.addEventListener("click", (e) => {
+  const btn = e.target;
+
+  if (!btn.dataset.action) return;
+
+  const id = parseInt(btn.dataset.id);
+
+  if (btn.dataset.action === "add") {
+    addToCart(id);
+  }
+
+  if (btn.dataset.action === "remove") {
+    removeFromCart(id);
+  }
+});
 
 /* =============================
    UI
