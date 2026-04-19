@@ -1,15 +1,26 @@
+const products = [
+  { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
+  { id: 2, name: "Ghost Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
+
+  { id: 3, name: "Bat Earrings", price: 8, image: "https://via.placeholder.com/200", category: "earrings" },
+
+  { id: 4, name: "Heart Keychain", price: 5, image: "https://via.placeholder.com/200", category: "keychains" },
+
+  { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" }
+];
+
+/* =============================
+   CART FORMAT (NEW)
+   { id, qty }
+============================= */
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =============================
-   RENDER PRODUCTS BY CATEGORY
+   RENDER PRODUCTS
 ============================= */
 
 function renderProducts() {
-  if (typeof products === "undefined") {
-    console.error("products is not loaded. Make sure data.js is included before app.js");
-    return;
-  }
-
   products.forEach(p => {
     const container = document.getElementById(p.category);
     if (!container) return;
@@ -29,16 +40,37 @@ function renderProducts() {
 }
 
 /* =============================
-   CART SYSTEM
+   CART LOGIC (QUANTITIES)
 ============================= */
 
 function addToCart(id) {
-  const item = products.find(p => p.id === id);
-  if (!item) return;
+  const existing = cart.find(item => item.id === id);
 
-  cart.push(item);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ id, qty: 1 });
+  }
+
   updateCart();
 }
+
+function removeFromCart(id) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+
+  item.qty -= 1;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.id !== id);
+  }
+
+  updateCart();
+}
+
+/* =============================
+   CART UI RENDER
+============================= */
 
 function updateCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -52,20 +84,38 @@ function updateCart() {
   cartItems.innerHTML = "";
 
   let total = 0;
+  let count = 0;
 
   cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (!product) return;
+
+    const itemTotal = product.price * item.qty;
+    total += itemTotal;
+    count += item.qty;
+
     const li = document.createElement("li");
-    li.textContent = `${item.name} - £${item.price}`;
+
+    li.innerHTML = `
+      <span>
+        ${product.name} x${item.qty} - £${itemTotal}
+      </span>
+
+      <div class="cart-controls">
+        <button onclick="removeFromCart(${item.id})">−</button>
+        <button onclick="addToCart(${item.id})">+</button>
+      </div>
+    `;
+
     cartItems.appendChild(li);
-    total += item.price;
   });
 
   totalEl.textContent = total;
-  countEl.textContent = cart.length;
+  countEl.textContent = count;
 }
 
 /* =============================
-   UI TOGGLES
+   UI
 ============================= */
 
 function toggleCart() {
