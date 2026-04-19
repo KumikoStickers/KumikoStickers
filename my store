@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>My Store</h1>
+  <div class="cart-icon" onclick="toggleCart()">
+    🛒 <span id="cart-count">0</span>
+  </div>
+</header>
+
+<main>
+  <div id="products" class="grid"></div>
+</main>
+
+<!-- Cart Sidebar -->
+<div id="cart" class="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <p>Total: £<span id="total">0</span></p>
+  <button onclick="checkout()">Checkout</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: black;
+  color: white;
+}
+
+.cart-icon {
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.cart {
+  position: fixed;
+  right: -350px;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: white;
+  padding: 20px;
+  transition: 0.3s;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+}
+
+.cart.open {
+  right: 0;
+}
+
+const products = [
+  {
+    id: 1,
+    name: "T-Shirt",
+    price: 20,
+    image: "https://via.placeholder.com/200"
+  },
+  {
+    id: 2,
+    name: "Hoodie",
+    price: 40,
+    image: "https://via.placeholder.com/200"
+  },
+  {
+    id: 3,
+    name: "Cap",
+    price: 15,
+    image: "https://via.placeholder.com/200"
+  }
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const productContainer = document.getElementById("products");
+const cartEl = document.getElementById("cart");
+
+function renderProducts() {
+  products.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${p.image}" />
+      <h3>${p.name}</h3>
+      <p>£${p.price}</p>
+      <button onclick="addToCart(${p.id})">Add to Cart</button>
+    `;
+    productContainer.appendChild(div);
+  });
+}
+
+function addToCart(id) {
+  const item = products.find(p => p.id === id);
+  cart.push(item);
+  updateCart();
+}
+
+function updateCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  const cartItems = document.getElementById("cart-items");
+  const totalEl = document.getElementById("total");
+  const countEl = document.getElementById("cart-count");
+
+  cartItems.innerHTML = "";
+  let total = 0;
+
+  cart.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} - £${item.price}`;
+    cartItems.appendChild(li);
+    total += item.price;
+  });
+
+  totalEl.textContent = total;
+  countEl.textContent = cart.length;
+}
+
+function toggleCart() {
+  cartEl.classList.toggle("open");
+}
+
+function checkout() {
+  alert("Connect Stripe / Firebase here");
+}
+
+renderProducts();
+updateCart();
