@@ -118,5 +118,48 @@ button:hover {
 
 #total {
   font-weight: bold;
+
+  /* Home / Intro Page */
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.intro-container {
+  max-width: 500px;
+}
+
+.tagline {
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+/* Menu buttons */
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menu-btn {
+  display: block;
+  padding: 14px;
+  background: #C8A2FF;
+  color: black;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  transform: scale(1.05);
+  background: #D8B8FF;
+}
   color: #C8A2FF;
 }
