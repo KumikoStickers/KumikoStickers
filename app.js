@@ -16,6 +16,25 @@ const products = [
 let cart = [];
 
 /* =============================
+   SHIPPING SETTINGS
+============================= */
+
+const SHIPPING_FLAT_RATE = 2.50;
+const FREE_SHIPPING_THRESHOLD = 20;
+
+function calculateShipping(subtotal) {
+
+  if (subtotal === 0) return 0;
+
+  if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+    return 0;
+  }
+
+  return SHIPPING_FLAT_RATE;
+
+}
+
+/* =============================
    INIT
 ============================= */
 
