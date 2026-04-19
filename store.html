@@ -20,11 +20,15 @@
 
     <div id="cart" class="cart">
       <h3>Your Basket</h3>
+
       <ul id="cart-items"></ul>
+
       <p>Subtotal: £<span id="subtotal">0</span></p>
       <p>Sticker deal discount: £<span id="discount">0</span></p>
       <p>Shipping: £<span id="shipping">0</span></p>
+
       <p><strong>Total: £<span id="total">0</span></strong></p>
+
       <div id="paypal-button-container"></div>
     </div>
   </div>
@@ -54,7 +58,9 @@
 
 </main>
 
-<!-- 🔥 STEP 2: FIREBASE -->
+<!-- =============================
+     FIREBASE
+============================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -76,7 +82,22 @@
   window.firebaseCollection = collection;
 </script>
 
+<!-- =============================
+     EMAILJS
+============================= -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  emailjs.init("mqFPLUQ54UVuRgsTT");
+</script>
+
+<!-- =============================
+     PAYPAL
+============================= -->
 <script src="https://www.paypal.com/sdk/js?client-id=ASdhm1ibTGm3XLF-Bab_Hqe_S6VM1P3b8M6JJOGvO35Zb6JpgVmF_bdGMk7f4LDugE60iu1DZsst-urI&currency=GBP"></script>
+
+<!-- =============================
+     APP
+============================= -->
 <script src="app.js"></script>
 
 </body>
