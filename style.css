@@ -182,3 +182,94 @@ button {
   padding: 4px 8px;
   font-size: 12px;
 }
+
+@media (max-width: 768px) {
+
+  /* =============================
+     GLOBAL SPACING FIX
+  ============================= */
+
+  main {
+    padding: 16px !important;
+    gap: 30px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  /* =============================
+     PRODUCT GRID (IMPORTANT)
+  ============================= */
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .product {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .product img {
+    border-radius: 8px;
+  }
+
+  /* =============================
+     CART BUTTON (TOP RIGHT FIX)
+  ============================= */
+
+  .header-right {
+    top: 10px;
+    right: 10px;
+  }
+
+  .cart-icon {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  /* =============================
+     CART DRAWER (MOBILE FULL WIDTH)
+  ============================= */
+
+  .cart {
+    width: 100% !important;
+    right: -100%;
+    border-left: none;
+  }
+
+  .cart.open {
+    right: 0;
+  }
+
+  /* =============================
+     PRODUCT TEXT SCALE DOWN
+  ============================= */
+
+  .product h3 {
+    font-size: 14px;
+  }
+
+  .product p {
+    font-size: 13px;
+  }
+
+  button {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* =============================
+     IMPROVE TOUCH TARGETS
+  ============================= */
+
+  button {
+    min-height: 36px;
+  }
+
+  .cart-icon {
+    min-height: 36px;
+  }
+}
