@@ -2,6 +2,10 @@ const products = window.productData || [];
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+/* =============================
+   RENDER PRODUCTS
+============================= */
+
 function renderProducts() {
   products.forEach(p => {
     const container = document.getElementById(p.category);
@@ -21,11 +25,26 @@ function renderProducts() {
   });
 }
 
+/* =============================
+   CART ACTIONS
+============================= */
+
 function addToCart(id) {
   const item = products.find(p => p.id === id);
+  if (!item) return;
+
   cart.push(item);
   updateCart();
 }
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCart();
+}
+
+/* =============================
+   CART UI
+============================= */
 
 function updateCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -40,9 +59,14 @@ function updateCart() {
 
   let total = 0;
 
-  cart.forEach(item => {
+  cart.forEach((item, index) => {
     const li = document.createElement("li");
-    li.textContent = `${item.name} - £${item.price}`;
+
+    li.innerHTML = `
+      <span>${item.name} - £${item.price}</span>
+      <button onclick="removeFromCart(${index})">Remove</button>
+    `;
+
     cartItems.appendChild(li);
     total += item.price;
   });
@@ -51,6 +75,10 @@ function updateCart() {
   countEl.textContent = cart.length;
 }
 
+/* =============================
+   UI HELPERS
+============================= */
+
 function toggleCart() {
   document.getElementById("cart").classList.toggle("open");
 }
@@ -58,6 +86,10 @@ function toggleCart() {
 function checkout() {
   alert("Checkout not connected yet");
 }
+
+/* =============================
+   INIT
+============================= */
 
 renderProducts();
 updateCart();
