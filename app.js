@@ -11,19 +11,17 @@ const products = [
 
 /* =============================
    CART (SAFE FORMAT)
-   ALWAYS: { id, qty }
 ============================= */
 
 let cart = [];
 
 /* =============================
-   INIT (fix old broken data)
+   INIT CART FROM STORAGE
 ============================= */
 
 document.addEventListener("DOMContentLoaded", () => {
   const saved = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // normalize old + broken cart formats
   const cleaned = [];
 
   saved.forEach(item => {
@@ -38,8 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
       existing.qty += item.qty || 1;
     } else {
       cleaned.push({
-        ...product,
         id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
         qty: item.qty || 1
       });
     }
@@ -138,7 +138,6 @@ function updateCart() {
 
     li.innerHTML = `
       <span>${item.name} x${item.qty} — £${itemTotal}</span>
-
       <div>
         <button onclick="removeFromCart(${item.id})">−</button>
         <button onclick="addToCart(${item.id})">+</button>
@@ -160,6 +159,46 @@ function toggleCart() {
   document.getElementById("cart").classList.toggle("open");
 }
 
+/* =============================
+   STEP 3: FIREBASE CHECKOUT
+============================= */
+
 function checkout() {
-  alert("Checkout not connected yet");
+  if (cart.length === 0) {
+    alert("Your basket is empty");
+    return;
+  }
+
+  const order = {
+    items: cart.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      qty: item.qty
+    })),
+    total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+    itemCount: cart.reduce((sum, item) => sum + item.qty, 0),
+    createdAt: new Date().toISOString()
+  };
+
+  if (!window.firebaseDB) {
+    alert("Firebase not connected");
+    return;
+  }
+
+  window.firebaseAddDoc(
+    window.firebaseCollection(window.firebaseDB, "orders"),
+    order
+  )
+    .then(() => {
+      alert("Order placed ✨");
+
+      cart = [];
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Checkout failed");
+    });
 }
