@@ -1,48 +1,89 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #0F0F0F;
+  color: #F5F5F5;
 }
+
+/* Header */
 
 header {
   display: flex;
   justify-content: space-between;
-  padding: 15px 30px;
-  background: black;
-  color: white;
+  align-items: center;
+  padding: 16px 28px;
+  background: #000;
+  border-bottom: 2px solid #C8A2FF;
 }
+
+h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+/* Cart icon */
 
 .cart-icon {
   cursor: pointer;
+  font-size: 18px;
+  background: #1C1C1C;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #444444;
 }
+
+/* Product grid */
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  gap: 22px;
+  padding: 24px;
 }
 
+/* Product cards */
+
 .card {
-  background: white;
-  border-radius: 10px;
-  padding: 15px;
+  background: #1C1C1C;
+  border-radius: 14px;
+  padding: 16px;
   text-align: center;
+  border: 1px solid #444444;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(200, 162, 255, 0.25);
 }
 
 .card img {
   width: 100%;
   border-radius: 10px;
+  margin-bottom: 10px;
 }
 
+/* Buttons */
+
 button {
-  background: black;
-  color: white;
+  background: #C8A2FF;
+  color: black;
   border: none;
-  padding: 10px;
+  padding: 10px 14px;
   cursor: pointer;
   margin-top: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.2s, transform 0.1s;
 }
+
+button:hover {
+  background: #D8B8FF;
+  transform: scale(1.03);
+}
+
+/* Cart sidebar */
 
 .cart {
   position: fixed;
@@ -50,12 +91,32 @@ button {
   top: 0;
   width: 300px;
   height: 100%;
-  background: white;
+  background: #1C1C1C;
   padding: 20px;
   transition: 0.3s;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+  box-shadow: -2px 0 12px rgba(0,0,0,0.6);
+  border-left: 2px solid #C8A2FF;
 }
 
 .cart.open {
   right: 0;
+}
+
+/* Cart list */
+
+#cart-items {
+  list-style: none;
+  padding: 0;
+}
+
+#cart-items li {
+  padding: 6px 0;
+  border-bottom: 1px solid #444444;
+}
+
+/* Total */
+
+#total {
+  font-weight: bold;
+  color: #C8A2FF;
 }
