@@ -198,7 +198,51 @@ function checkout() {
       updateCart();
     })
     .catch(err => {
+
       console.error(err);
       alert("Checkout failed");
     });
+}
+
+function renderPayPalButton() {
+  if (!window.paypal) return;
+
+  paypal.Buttons({
+
+    createOrder: function (data, actions) {
+
+      const total = cart.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      );
+
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: total.toFixed(2)
+          }
+        }]
+      });
+    },
+
+    onApprove: function (data, actions) {
+
+      return actions.order.capture().then(function (details) {
+
+        alert(
+          "Payment successful! Thank you " +
+          details.payer.name.given_name +
+          " ✨"
+        );
+
+        // clear cart
+        cart = [];
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCart();
+
+      });
+
+    }
+
+  }).render("#paypal-button-container");
 }
