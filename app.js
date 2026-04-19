@@ -1,3 +1,5 @@
+console.log("APP LOADED");
+console.log("PRODUCTS:", products);
 
 const products = [
   { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
