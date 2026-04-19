@@ -170,3 +170,15 @@ button {
 #total {
   color: #C8A2FF;
 }
+
+#cart-items li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+#cart-items button {
+  padding: 4px 8px;
+  font-size: 12px;
+}
