@@ -1,5 +1,3 @@
-console.log("APP LOADED");
-console.log("PRODUCTS:", products);
 
 const products = [
   { id: 1, name: "Skull Sticker", price: 2, image: "https://via.placeholder.com/200", category: "stickers" },
@@ -12,14 +10,19 @@ const products = [
   { id: 5, name: "Spooky Pin", price: 3, image: "https://via.placeholder.com/200", category: "pins" }
 ];
 
-/* =============================
-   CART (qty-based)
-============================= */
-
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =============================
-   RENDER PRODUCTS
+   INIT SAFE WRAPPER
+============================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  updateCart();
+});
+
+/* =============================
+   PRODUCTS
 ============================= */
 
 function renderProducts() {
@@ -49,7 +52,7 @@ function renderProducts() {
 ============================= */
 
 function addToCart(id) {
-  const existing = cart.find(item => item.id === id);
+  const existing = cart.find(i => i.id === id);
 
   if (existing) {
     existing.qty += 1;
@@ -74,7 +77,7 @@ function removeFromCart(id) {
 }
 
 /* =============================
-   CART UI
+   CART RENDER
 ============================= */
 
 function updateCart() {
@@ -118,7 +121,7 @@ function updateCart() {
 }
 
 /* =============================
-   EVENT DELEGATION (FIX)
+   EVENT DELEGATION (ROBUST FIX)
 ============================= */
 
 document.addEventListener("click", (e) => {
@@ -148,10 +151,3 @@ function toggleCart() {
 function checkout() {
   alert("Connect Stripe / Firebase here");
 }
-
-/* =============================
-   INIT
-============================= */
-
-renderProducts();
-updateCart();
