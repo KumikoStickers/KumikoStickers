@@ -204,6 +204,52 @@ function toggleCart() {
   document.getElementById("cart").classList.toggle("open");
 }
 
+function saveOrderToFirebase(paypalDetails) {
+
+  if (!window.firebaseDB) {
+    console.warn("Firebase not loaded");
+    return;
+  }
+
+  const { subtotal, discount, shipping, total } = getTotals();
+
+  const shippingInfo = paypalDetails?.purchase_units?.[0]?.shipping || {};
+  const payer = paypalDetails?.payer || {};
+
+  const order = {
+    items: cart.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      qty: item.qty,
+      category: item.category
+    })),
+
+    totals: {
+      subtotal,
+      discount,
+      shipping,
+      total
+    },
+
+    customer: {
+      name: payer.name?.given_name + " " + payer.name?.surname || "",
+      email: payer.email_address || ""
+    },
+
+    shippingAddress: shippingInfo.address || {},
+
+    paypalOrderId: paypalDetails.id,
+
+    createdAt: new Date().toISOString()
+  };
+
+  return window.firebaseAddDoc(
+    window.firebaseCollection(window.firebaseDB, "orders"),
+    order
+  );
+}
+
 /* =============================
    PAYPAL
 ============================= */
@@ -238,17 +284,25 @@ function renderPayPalButton() {
 
     onApprove: function (_, actions) {
 
-      return actions.order.capture().then(() => {
+  return actions.order.capture().then(async (details) => {
 
-        alert("Payment successful ✨");
+    try {
 
-        cart = [];
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCart();
+      await saveOrderToFirebase(details);
 
-      });
+      alert("Payment successful ✨ Order saved!");
+
+      cart = [];
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+
+    } catch (err) {
+
+      console.error("Firebase save failed:", err);
+      alert("Payment successful, but order saving failed");
 
     }
 
-  }).render("#paypal-button-container");
+  });
+
 }
