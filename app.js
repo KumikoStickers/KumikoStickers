@@ -44,6 +44,31 @@ let cart = [];
 const SHIPPING_FLAT_RATE = 2.50;
 const FREE_SHIPPING_THRESHOLD = 20;
 
+/* =============================
+   DEAL: 4 STICKERS FOR £4
+============================= */
+
+function calculateStickerDiscount() {
+
+  let stickerQty = 0;
+
+  cart.forEach(item => {
+    if (item.category === "stickers") {
+      stickerQty += item.qty;
+    }
+  });
+
+  const deals = Math.floor(stickerQty / 4);
+
+  const normalPrice = 4 * 1.5; // £6 normally
+  const dealPrice = 4;         // £4 deal
+
+  const discountPerDeal = normalPrice - dealPrice; // £2 discount
+
+  return deals * discountPerDeal;
+
+}
+
 function calculateShipping(subtotal) {
   if (subtotal === 0) return 0;
   if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
@@ -51,16 +76,20 @@ function calculateShipping(subtotal) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const saved = JSON.parse(localStorage.getItem("cart")) || [];
   cart = saved;
 
   renderProducts();
   updateCart();
   renderPayPalButton();
+
 });
 
 function renderProducts() {
+
   products.forEach(p => {
+
     const container = document.getElementById(p.category);
     if (!container) return;
 
@@ -75,10 +104,13 @@ function renderProducts() {
     `;
 
     container.appendChild(div);
+
   });
+
 }
 
 function addToCart(id) {
+
   const item = products.find(p => p.id === id);
   if (!item) return;
 
@@ -91,9 +123,11 @@ function addToCart(id) {
   }
 
   updateCart();
+
 }
 
 function removeFromCart(id) {
+
   const item = cart.find(i => i.id === id);
   if (!item) return;
 
@@ -104,9 +138,11 @@ function removeFromCart(id) {
   }
 
   updateCart();
+
 }
 
 function updateCart() {
+
   const cartItems = document.getElementById("cart-items");
   const subtotalEl = document.getElementById("subtotal");
   const shippingEl = document.getElementById("shipping");
@@ -127,6 +163,7 @@ function updateCart() {
   }
 
   cart.forEach(item => {
+
     const itemTotal = item.price * item.qty;
 
     subtotal += itemTotal;
@@ -143,7 +180,12 @@ function updateCart() {
     `;
 
     cartItems.appendChild(li);
+
   });
+
+  const discount = calculateStickerDiscount();
+
+  subtotal = subtotal - discount;
 
   const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
@@ -152,6 +194,7 @@ function updateCart() {
   if (shippingEl) shippingEl.textContent = shipping.toFixed(2);
   if (totalEl) totalEl.textContent = total.toFixed(2);
   if (countEl) countEl.textContent = count;
+
 }
 
 function toggleCart() {
@@ -159,14 +202,22 @@ function toggleCart() {
 }
 
 function renderPayPalButton() {
+
   if (typeof paypal === "undefined") {
     setTimeout(renderPayPalButton, 500);
     return;
   }
 
   paypal.Buttons({
+
     createOrder: function (data, actions) {
-      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      const discount = calculateStickerDiscount();
+
+      subtotal = subtotal - discount;
+
       const shipping = calculateShipping(subtotal);
       const total = subtotal + shipping;
 
@@ -176,37 +227,55 @@ function renderPayPalButton() {
       }
 
       return actions.order.create({
+
         purchase_units: [{
+
           amount: {
+
             currency_code: "GBP",
+
             value: total.toFixed(2),
+
             breakdown: {
+
               item_total: {
                 currency_code: "GBP",
                 value: subtotal.toFixed(2)
               },
+
               shipping: {
                 currency_code: "GBP",
                 value: shipping.toFixed(2)
               }
+
             }
+
           }
+
         }],
+
         application_context: {
           shipping_preference: "GET_FROM_FILE"
         }
+
       });
+
     },
 
     onApprove: function (data, actions) {
+
       return actions.order.capture().then(function (details) {
+
         alert("Payment successful! Thank you " + details.payer.name.given_name + " ✨");
 
         cart = [];
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCart();
+
       });
+
     }
 
   }).render("#paypal-button-container");
+
 }
