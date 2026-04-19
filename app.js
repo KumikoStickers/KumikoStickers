@@ -94,7 +94,9 @@ function renderProducts() {
       <img src="${p.image}" alt="${p.name}" />
       <h3>${p.name}</h3>
       <p>£${p.price}</p>
-      <button onclick="addToCart(${p.id})">Add to Cart</button>
+      <button onclick="addToCart(${p.id})">
+        Add to Cart
+      </button>
     `;
 
     container.appendChild(div);
@@ -155,7 +157,10 @@ function updateCart() {
 
   if (!cartItems || !totalEl || !countEl) return;
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   cartItems.innerHTML = "";
 
@@ -163,12 +168,14 @@ function updateCart() {
   let count = 0;
 
   if (cart.length === 0) {
-    cartItems.innerHTML = "<li>Your basket is empty</li>";
+    cartItems.innerHTML =
+      "<li>Your basket is empty</li>";
   }
 
   cart.forEach(item => {
 
-    const itemTotal = item.price * item.qty;
+    const itemTotal =
+      item.price * item.qty;
 
     subtotal += itemTotal;
     count += item.qty;
@@ -176,10 +183,19 @@ function updateCart() {
     const li = document.createElement("li");
 
     li.innerHTML = `
-      <span>${item.name} x${item.qty} — £${itemTotal.toFixed(2)}</span>
+      <span>
+        ${item.name} x${item.qty}
+        — £${itemTotal.toFixed(2)}
+      </span>
+
       <div>
-        <button onclick="removeFromCart(${item.id})">−</button>
-        <button onclick="addToCart(${item.id})">+</button>
+        <button onclick="removeFromCart(${item.id})">
+          −
+        </button>
+
+        <button onclick="addToCart(${item.id})">
+          +
+        </button>
       </div>
     `;
 
@@ -187,15 +203,25 @@ function updateCart() {
 
   });
 
-  const shipping = calculateShipping(subtotal);
+  const shipping =
+    calculateShipping(subtotal);
 
-  const total = subtotal + shipping;
+  const total =
+    subtotal + shipping;
 
-  if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2);
-  if (shippingEl) shippingEl.textContent = shipping.toFixed(2);
+  if (subtotalEl)
+    subtotalEl.textContent =
+      subtotal.toFixed(2);
 
-  totalEl.textContent = total.toFixed(2);
-  countEl.textContent = count;
+  if (shippingEl)
+    shippingEl.textContent =
+      shipping.toFixed(2);
+
+  totalEl.textContent =
+    total.toFixed(2);
+
+  countEl.textContent =
+    count;
 
 }
 
@@ -217,127 +243,240 @@ function toggleCart() {
 
 function renderPayPalButton() {
 
-  // Wait until PayPal loads
   if (typeof paypal === "undefined") {
-    setTimeout(renderPayPalButton, 500);
+    setTimeout(
+      renderPayPalButton,
+      500
+    );
     return;
   }
 
   paypal.Buttons({
 
-    createOrder: function (data, actions) {
+    createOrder: function (
+      data,
+      actions
+    ) {
 
-      const subtotal = cart.reduce(
-  (sum, item) => sum + item.price * item.qty,
-  0
-);
+      const subtotal =
+        cart.reduce(
+          (sum, item) =>
+            sum + item.price * item.qty,
+          0
+        );
 
-const shipping = calculateShipping(subtotal);
+      const shipping =
+        calculateShipping(subtotal);
 
-const total = subtotal + shipping;
+      const total =
+        subtotal + shipping;
 
       if (total <= 0) {
-        alert("Your basket is empty!");
+        alert(
+          "Your basket is empty!"
+        );
         return;
       }
 
       return actions.order.create({
-  purchase_units: [{
-    amount: {
-      value: total.toFixed(2),
-      currency_code: "GBP"
-    }
-  }],
-  application_context: {
-    shipping_preference: "GET_FROM_FILE"
-  }
-});
+
+        purchase_units: [{
+
+          amount: {
+
+            currency_code: "GBP",
+
+            value:
+              total.toFixed(2),
+
+            breakdown: {
+
+              item_total: {
+                currency_code: "GBP",
+                value:
+                  subtotal.toFixed(2)
+              },
+
+              shipping: {
+                currency_code: "GBP",
+                value:
+                  shipping.toFixed(2)
+              }
+
+            }
+
+          }
+
+        }],
+
+        application_context: {
+          shipping_preference:
+            "GET_FROM_FILE"
+        }
+
+      });
 
     },
 
-    onApprove: function (data, actions) {
+    onApprove: function (
+      data,
+      actions
+    ) {
 
-  return actions.order.capture().then(function (details) {
+      return actions
+        .order
+        .capture()
+        .then(function (
+          details
+        ) {
 
-    console.log(details.purchase_units[0].shipping);
+          const shippingInfo =
+            details
+              .purchase_units[0]
+              .shipping;
 
-    alert(
-      "Payment successful! Thank you " +
-      details.payer.name.given_name +
-      " ✨"
-    );
+          const subtotal =
+            cart.reduce(
+              (sum, item) =>
+                sum +
+                item.price *
+                item.qty,
+              0
+            );
 
-    cart = [];
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCart();
+          const shipping =
+            calculateShipping(
+              subtotal
+            );
 
-  });
+          const total =
+            subtotal + shipping;
 
-},
+          const order = {
 
-  }).render("#paypal-button-container");
+            customerName:
+              details
+                .payer
+                .name
+                .given_name +
+              " " +
+              details
+                .payer
+                .name
+                .surname,
 
-}
+            email:
+              details
+                .payer
+                .email_address,
 
-/* =============================
-   FIREBASE ORDER SAVE (OPTIONAL)
-============================= */
+            address: {
 
-function checkout() {
+              line1:
+                shippingInfo
+                  .address
+                  .address_line_1,
 
-  if (cart.length === 0) {
-    alert("Your basket is empty");
-    return;
-  }
+              line2:
+                shippingInfo
+                  .address
+                  .address_line_2 || "",
 
-  if (!window.firebaseDB) {
-    alert("Firebase not connected");
-    return;
-  }
+              city:
+                shippingInfo
+                  .address
+                  .admin_area_2,
 
-  const order = {
+              county:
+                shippingInfo
+                  .address
+                  .admin_area_1,
 
-    items: cart.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      qty: item.qty
-    })),
+              postcode:
+                shippingInfo
+                  .address
+                  .postal_code,
 
-    total: cart.reduce(
-      (sum, item) => sum + item.price * item.qty,
-      0
-    ),
+              country:
+                shippingInfo
+                  .address
+                  .country_code
 
-    itemCount: cart.reduce(
-      (sum, item) => sum + item.qty,
-      0
-    ),
+            },
 
-    createdAt: new Date().toISOString()
+            items:
+              cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                qty: item.qty
+              })),
 
-  };
+            subtotal:
+              subtotal,
 
-  window.firebaseAddDoc(
-    window.firebaseCollection(
-      window.firebaseDB,
-      "orders"
-    ),
-    order
-  )
+            shipping:
+              shipping,
 
-    .then(() => {
+            total:
+              total,
 
-      alert("Order saved to Firebase ✨");
+            createdAt:
+              new Date()
+                .toISOString()
 
-    })
+          };
 
-    .catch(err => {
+          console.log(
+            "ORDER:",
+            order
+          );
 
-      console.error(err);
+          if (window.firebaseDB) {
 
-      alert("Failed to save order");
+            window.firebaseAddDoc(
+              window.firebaseCollection(
+                window.firebaseDB,
+                "orders"
+              ),
+              order
+            )
 
-    });
+            .then(() => {
+              console.log(
+                "Order saved to Firebase"
+              );
+            })
+
+            .catch(err => {
+              console.error(err);
+            });
+
+          }
+
+          alert(
+            "Payment successful! Thank you " +
+            details.payer.name
+              .given_name +
+            " ✨"
+          );
+
+          cart = [];
+
+          localStorage.setItem(
+            "cart",
+            JSON.stringify(cart)
+          );
+
+          updateCart();
+
+        });
+
+    }
+
+  })
+  .render(
+    "#paypal-button-container"
+  );
 
 }
