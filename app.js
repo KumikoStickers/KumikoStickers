@@ -49,8 +49,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
 renderProducts();
 updateCart();
-renderPayPalButton();
 });
+
+function renderPayPalButton() {
+
+  // Wait until PayPal is loaded
+  if (typeof paypal === "undefined") {
+    setTimeout(renderPayPalButton, 500);
+    return;
+  }
+
+  paypal.Buttons({
+
+    createOrder: function (data, actions) {
+
+      const total = cart.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      );
+
+      if (total <= 0) {
+        alert("Your basket is empty!");
+        return;
+      }
+
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: total.toFixed(2)
+          }
+        }]
+      });
+
+    },
+
+    onApprove: function (data, actions) {
+
+      return actions.order.capture().then(function (details) {
+
+        alert(
+          "Payment successful! Thank you " +
+          details.payer.name.given_name +
+          " ✨"
+        );
+
+        // Clear cart
+        cart = [];
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCart();
+
+      });
+
+    }
+
+  }).render("#paypal-button-container");
+
+}
 
 /* =============================
    PRODUCTS
