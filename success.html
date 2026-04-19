@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="store-page">
+
+  <main style="max-width:600px;margin:40px auto;text-align:center;">
+
+    <h1>✨ Order Confirmed</h1>
+
+    <p id="message">Processing your order...</p>
+
+    <div id="order-summary" style="text-align:left;margin-top:20px;"></div>
+
+    <a href="store.html" style="
+      display:inline-block;
+      margin-top:20px;
+      padding:10px 20px;
+      background:#000;
+      color:#fff;
+      text-decoration:none;
+      border-radius:8px;
+    ">
+      Back to shop
+    </a>
+
+  </main>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem("lastOrder"));
+
+    const message = document.getElementById("message");
+    const summary = document.getElementById("order-summary");
+
+    if (!order) {
+      message.textContent = "No order found.";
+    } else {
+      message.textContent = "Thank you for your purchase!";
+
+      summary.innerHTML = `
+        <h3>Order Summary</h3>
+        <p><strong>Total:</strong> £${order.total.toFixed(2)}</p>
+        <p><strong>Shipping:</strong> £${order.shipping.toFixed(2)}</p>
+        <p><strong>Items:</strong></p>
+        <ul>
+          ${order.items.map(i => `
+            <li>${i.name} x${i.qty}</li>
+          `).join("")}
+        </ul>
+      `;
+    }
+  </script>
+
+</body>
+</html>
