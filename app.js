@@ -47,8 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cart = cleaned;
 
-  renderProducts();
-  updateCart();
+renderProducts();
+updateCart();
+renderPayPalButton();
 });
 
 /* =============================
